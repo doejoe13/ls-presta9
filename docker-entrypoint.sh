@@ -16,9 +16,9 @@ if [ ! -f /var/www/vhosts/localhost/html/app/config/parameters.php ]; then
     php /var/www/vhosts/localhost/html/install/index_cli.php \
       --domain=localhost \
       --db_server=$DB_SERVER \
-      --db_user=$DB_USER \
-      --db_password=$DB_PASSWORD \
-      --db_name=$DB_NAME \
+      --db_user=$MYSQL_USER \
+      --db_password=$MYSQL_PASSWORD \
+      --db_name=$MYSQL_DATABASE \
       --email=$ADMIN_EMAIL \
       --password=$ADMIN_PASSWORD
 
@@ -32,3 +32,4 @@ fi
 echo "Starting LiteSpeed..."
 /usr/local/lsws/bin/lswsctrl start
 tail -f /usr/local/lsws/logs/error.log
+
