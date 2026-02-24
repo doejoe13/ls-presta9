@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mariadb:11.4
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: always
+
+  litespeed:
+    build: .
+    environment:
+      # Pass DB variables to the container
+      DB_SERVER: mysql
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+      # Define your default admin credentials here
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: admin123
+      TZ: UTC
+    ports:
+      - "8081:80"
+      - "7080:7080"
+    depends_on:
+      - mysql
+    restart: always
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - "8080:80"
+    environment:
+      DATABASE_HOST: mysql
+    restart: always
+
+volumes:
+  mysql_data:
