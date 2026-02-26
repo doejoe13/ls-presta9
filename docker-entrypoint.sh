@@ -11,10 +11,20 @@ done
 if [ ! -f /var/www/vhosts/localhost/html/app/config/parameters.php ]; then
     echo "PrestaShop not installed. Starting automatic installation..."
     
+    # FIX: Use the DOMAIN variable passed from Dockploy
+    # If DOMAIN is not set, fallback to localhost
+    INSTALL_DOMAIN="${DOMAIN}"
+    
+    echo "Installing for domain: $INSTALL_DOMAIN"
+
+    # Fix permissions so the installer can rename the admin folder
+    # We run this as root before the installer runs
+    chown -R nobody:nogroup /var/www/vhosts/localhost/html
+    
     # Run the CLI installer
     cd /var/www/vhosts/localhost/html
     php install/index_cli.php \
-      --domain=$DOMAIN \
+      --domain=$INSTALL_DOMAIN \
       --db_server=$DB_SERVER \
       --db_user=$DB_USER \
       --db_password=$DB_PASSWORD \
@@ -22,7 +32,7 @@ if [ ! -f /var/www/vhosts/localhost/html/app/config/parameters.php ]; then
       --email=$ADMIN_EMAIL \
       --password=$ADMIN_PASSWORD
       
-    # FIX: Delete install folder for security
+    # Security: Delete install folder
     echo "Deleting install folder..."
     rm -rf /var/www/vhosts/localhost/html/install
     
