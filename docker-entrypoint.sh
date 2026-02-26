@@ -7,18 +7,30 @@ while ! mysqladmin ping -h"$DB_SERVER" --silent; do
     sleep 2
 done
 
-# 2. Check if PrestaShop is installed
+# 2. Configure LiteSpeed for the Custom Domain
+# If DOMAIN is set, map it to the localhost files
+if [ -n "$DOMAIN" ]; then
+    echo "Configuring Virtual Host for $DOMAIN..."
+    
+    # Add domain to LiteSpeed config (creates /var/www/vhosts/$DOMAIN)
+    domainctl.sh --add $DOMAIN
+    
+    # Link the custom domain folder to the existing localhost files
+    # This ensures requests to 'presta.totalplus.eu' serve the files in 'localhost/html'
+    if [ ! -d "/var/www/vhosts/$DOMAIN/html" ]; then
+        ln -s /var/www/vhosts/localhost/html /var/www/vhosts/$DOMAIN/html
+        echo "Linked $DOMAIN to localhost files."
+    fi
+fi
+
+# 3. Check if PrestaShop is installed
 if [ ! -f /var/www/vhosts/localhost/html/app/config/parameters.php ]; then
     echo "PrestaShop not installed. Starting automatic installation..."
     
-    # FIX: Use the DOMAIN variable passed from Dockploy
-    # If DOMAIN is not set, fallback to localhost
-    INSTALL_DOMAIN=$DOMAIN
-    
+    INSTALL_DOMAIN="${DOMAIN:-localhost}"
     echo "Installing for domain: $INSTALL_DOMAIN"
 
-    # Fix permissions so the installer can rename the admin folder
-    # We run this as root before the installer runs
+    # Fix permissions
     chown -R nobody:nogroup /var/www/vhosts/localhost/html
     
     # Run the CLI installer
@@ -41,7 +53,7 @@ else
     echo "PrestaShop is already installed."
 fi
 
-# 3. Start LiteSpeed
+# 4. Start LiteSpeed
 echo "Starting LiteSpeed..."
 /usr/local/lsws/bin/lswsctrl start
 
