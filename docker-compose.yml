@@ -24,9 +24,9 @@ services:
       TZ: ${TIMEZONE}
       # --- CRITICAL FIX: DOMAIN must be here ---
       DOMAIN: ${DOMAIN}
-    ports:
+    #ports:
       #- "8081:80"   # MUST BE UNCOMMENTED
-      - "7080:7080"
+      #- "7080:7080"
     depends_on:
       - mysql
     restart: always
