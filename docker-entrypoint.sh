@@ -11,9 +11,6 @@ done
 if [ ! -f /var/www/vhosts/localhost/html/app/config/parameters.php ]; then
     echo "PrestaShop not installed. Starting automatic installation..."
     
-    # Fix permissions
-    chown -R www-data:www-data /var/www/vhosts/localhost/html
-    
     # Run the CLI installer
     cd /var/www/vhosts/localhost/html
     php install/index_cli.php \
@@ -25,6 +22,10 @@ if [ ! -f /var/www/vhosts/localhost/html/app/config/parameters.php ]; then
       --email=$ADMIN_EMAIL \
       --password=$ADMIN_PASSWORD
       
+    # FIX: Delete install folder for security
+    echo "Deleting install folder..."
+    rm -rf /var/www/vhosts/localhost/html/install
+    
     echo "PrestaShop Installation Complete."
 else
     echo "PrestaShop is already installed."
