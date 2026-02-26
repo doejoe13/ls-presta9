@@ -11,12 +11,10 @@ done
 if [ ! -f /var/www/vhosts/localhost/html/app/config/parameters.php ]; then
     echo "PrestaShop not installed. Starting automatic installation..."
     
-    # Fix permissions just in case (OpenLiteSpeed runs as 'lsadm' or 'nobody' depending on build)
-    # We map to www-data as that is standard for PrestaShop
+    # Fix permissions
     chown -R www-data:www-data /var/www/vhosts/localhost/html
     
     # Run the CLI installer
-    # We cd to the directory to ensure relative paths work
     cd /var/www/vhosts/localhost/html
     php install/index_cli.php \
       --domain=localhost \
@@ -34,8 +32,7 @@ fi
 
 # 3. Start LiteSpeed
 echo "Starting LiteSpeed..."
-# This is the correct command for OpenLiteSpeed inside the container
 /usr/local/lsws/bin/lswsctrl start
 
-# Keep container alive and show logs
+# Keep container alive
 tail -f /usr/local/lsws/logs/error.log
