@@ -25,7 +25,7 @@ services:
       # --- CRITICAL FIX: DOMAIN must be here ---
       DOMAIN: ${DOMAIN}
     ports:
-      - "8081:80"   # MUST BE UNCOMMENTED
+      #- "8081:80"   # MUST BE UNCOMMENTED
       - "7080:7080"
     depends_on:
       - mysql
