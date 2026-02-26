@@ -6,8 +6,6 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      PHP_MEMORY_LIMIT: "2048" # Allows individual scripts
-      DOMAIN: ${DOMAIN}
     volumes:
       - mysql_data:/var/lib/mysql
     restart: always
@@ -24,24 +22,25 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       TZ: ${TIMEZONE}
+      # --- CRITICAL FIX: DOMAIN must be here ---
+      DOMAIN: ${DOMAIN}
     ports:
-      #- "8081:80"
+      - "8081:80"   # MUST BE UNCOMMENTED
       - "7080:7080"
     depends_on:
       - mysql
     restart: always
-    # --- ADD THIS SECTION ---
     deploy:
       resources:
         limits:
           memory: 2G
         reservations:
-          memory: 1024M # Optional: guarantees at least 512MB is available
-    # ------------------------
+          memory: 1024M
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
-    #ports:
-      #- "8080:80"
+    ports:
+      - "8080:80"
     environment:
       DATABASE_HOST: mysql
     restart: always
