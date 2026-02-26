@@ -30,7 +30,14 @@ services:
     depends_on:
       - mysql
     restart: always
-
+    # --- ADD THIS SECTION ---
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1024M # Optional: guarantees at least 512MB is available
+    # ------------------------
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     #ports:
