@@ -1,22 +1,26 @@
-# CHANGED: Use OpenLiteSpeed (Free, no license required)
+# Use OpenLiteSpeed (Free)
 FROM litespeedtech/openlitespeed:latest
 
-# Install dependencies
+# Install dependencies (Switched to p7zip-full for reliability)
 RUN apt-get update && apt-get install -y \
-    unzip \
     wget \
+    p7zip-full \
     mariadb-client \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/vhosts/localhost/html
 
-# Download and Unzip PrestaShop 9.0.3
-RUN wget -q "https://assets.prestashop3.com/dst/edition/corporate/9.0.3-3.0/prestashop_edition_classic_version_9.0.3-3.0.zip" -O ps.zip && \
-    unzip ps.zip && \
-    unzip prestashop.zip && \
-    # FIX: Move files from nested 'prestashop' folder to current directory
-    if [ -d "prestashop" ]; then mv prestashop/* . && rm -rf prestashop; fi && \
-    rm ps.zip prestashop.zip
+# Download PrestaShop 9.0.3
+RUN wget -q "https://assets.prestashop3.com/dst/edition/corporate/9.0.3-3.0/prestashop_edition_classic_version_9.0.3-3.0.zip" -O ps.zip
+
+# Extract using 7-Zip (More stable than unzip)
+# 1. Extract the outer zip
+RUN 7z x ps.zip -y
+# 2. Extract the inner prestashop.zip
+RUN 7z x prestashop.zip -y
+# 3. Move files and cleanup
+RUN if [ -d "prestashop" ]; then mv prestashop/* . && rm -rf prestashop; fi && \
+    rm -f ps.zip prestashop.zip
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/vhosts/localhost/html && \
