@@ -14,7 +14,7 @@ if [ ! -f /var/www/vhosts/localhost/html/app/config/parameters.php ]; then
     # Run the CLI installer
     cd /var/www/vhosts/localhost/html
     php install/index_cli.php \
-      --domain=localhost \
+      --domain=$DOMAIN \
       --db_server=$DB_SERVER \
       --db_user=$DB_USER \
       --db_password=$DB_PASSWORD \
