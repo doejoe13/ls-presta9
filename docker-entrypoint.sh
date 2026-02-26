@@ -13,7 +13,7 @@ if [ ! -f /var/www/vhosts/localhost/html/app/config/parameters.php ]; then
     
     # FIX: Use the DOMAIN variable passed from Dockploy
     # If DOMAIN is not set, fallback to localhost
-    INSTALL_DOMAIN="${DOMAIN}"
+    INSTALL_DOMAIN="$DOMAIN"
     
     echo "Installing for domain: $INSTALL_DOMAIN"
 
