@@ -8,6 +8,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      PHP_MEMORY_LIMIT: "2048" # Allows individual scripts
     volumes:
       - mysql_data:/var/lib/mysql
     restart: always
