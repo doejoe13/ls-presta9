@@ -7,19 +7,21 @@ while ! mysqladmin ping -h"$DB_SERVER" --silent; do
     sleep 2
 done
 
-# 2. Configure LiteSpeed for the Custom Domain
-# If DOMAIN is set, map it to the localhost files
+# 2. Configure OpenLiteSpeed for the Custom Domain
+# We change the default 'localhost' vhost name to your domain
 if [ -n "$DOMAIN" ]; then
     echo "Configuring Virtual Host for $DOMAIN..."
     
-    # Add domain to LiteSpeed config (creates /var/www/vhosts/$DOMAIN)
-    domainctl.sh --add $DOMAIN
-    
-    # Link the custom domain folder to the existing localhost files
-    # This ensures requests to 'presta.totalplus.eu' serve the files in 'localhost/html'
-    if [ ! -d "/var/www/vhosts/$DOMAIN/html" ]; then
-        ln -s /var/www/vhosts/localhost/html /var/www/vhosts/$DOMAIN/html
-        echo "Linked $DOMAIN to localhost files."
+    # Rename the vhost configuration file
+    if [ -f /usr/local/lsws/conf/vhosts/localhost/vhconf.conf ]; then
+        # Change the 'name' parameter inside the config file
+        sed -i "s/name  localhost/name  ${DOMAIN}/g" /usr/local/lsws/conf/vhosts/localhost/vhconf.conf
+        
+        # Optional: Create a symlink if you want to access files via domain name folder
+        if [ ! -d "/var/www/vhosts/${DOMAIN}" ]; then
+            ln -s /var/www/vhosts/localhost /var/www/vhosts/${DOMAIN}
+        fi
+        echo "Virtual Host configured."
     fi
 fi
 
@@ -55,6 +57,8 @@ fi
 
 # 4. Start LiteSpeed
 echo "Starting LiteSpeed..."
+# Ensure it stops first if restarting
+/usr/local/lsws/bin/lswsctrl stop 2>/dev/null
 /usr/local/lsws/bin/lswsctrl start
 
 # Keep container alive
