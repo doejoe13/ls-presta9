@@ -10,10 +10,10 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /var/www/vhosts/localhost/html
 
 # Download PrestaShop 9.0.3
-RUN wget -q "https://assets.prestashop3.com/dst/edition/corporate/9.0.3-3.0/prestashop_edition_classic_version_9.0.3-3.0.zip" -O ps.zip && \
-    unzip ps.zip && \
-    unzip prestashop.zip && \
-    rm ps.zip prestashop.zip
+RUN wget -q "https://assets.prestashop3.com/dst/edition/corporate/9.0.3-3.0/prestashop_edition_classic_version_9.0.3-3.0.zip" -O ps.zip #&& \
+RUN unzip ps.zip #&& \
+RUN unzip prestashop.zip #&& \
+RUN rm ps.zip prestashop.zip
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/vhosts/localhost/html && \
